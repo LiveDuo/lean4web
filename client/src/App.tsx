@@ -5,7 +5,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 
 import { loadRenderInfoview } from '@leanprover/infoview/loader'
 import { InfoviewApi } from '@leanprover/infoview-api'
-import { InfoProvider, LeanClient } from './infoview'
+import { InfoProvider } from './infoview'
 
 const code = '#eval 3+1 \n #eval IO.println "hello" \n'
 
@@ -23,8 +23,7 @@ const Editor: React.FC = () => {
     const model = monaco.editor.createModel(code, 'lean4')
     const editor = monaco.editor.create(document.body, { model, })
 
-    const client = new LeanClient()
-    const infoProvider = new InfoProvider(client, editor)
+    const infoProvider = new InfoProvider(editor)
     const imports = {
       '@leanprover/infoview': `${window.location.origin}/index.production.min.js`,
       'react': `${window.location.origin}/react.production.min.js`,
@@ -36,7 +35,6 @@ const Editor: React.FC = () => {
       setInfoviewApi(api)
       setInfoProvider(infoProvider)
     })
-    client.start()
   }, [])
 
   useEffect(() => {

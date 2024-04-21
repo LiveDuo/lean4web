@@ -10,7 +10,6 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 import { MonacoLanguageClient, LanguageClientOptions, IConnectionProvider } from 'monaco-languageclient'
 
 const diagnosticsEmitter = new EventEmitter()
-const restartedEmitter = new EventEmitter()
 
 const project = 'MathlibLatest'
 
@@ -41,31 +40,19 @@ const connectionProvider : IConnectionProvider = {
   }
 }
 
-export class LeanClient implements Disposable {
-  client: MonacoLanguageClient | undefined
-
-  async start (): Promise<void> {
-
-    this.client = new MonacoLanguageClient({ id: 'lean4', name: 'Lean 4', clientOptions, connectionProvider })
-    await this.client.start()
-
-    restartedEmitter.fire()
-  }
-}
-
 export class InfoProvider implements Disposable {
 
   private infoviewApi: InfoviewApi
   private editor: monaco.editor.IStandaloneCodeEditor
 
-  public readonly client: LeanClient
+  public readonly client: MonacoLanguageClient | undefined
   public readonly editorApi: EditorApi = {
     createRpcSession: async (uri) => {
-      const result: RpcConnected = await this.client.client.sendRequest('$/lean/rpc/connect', { uri })
+      const result: RpcConnected = await this.client.sendRequest('$/lean/rpc/connect', { uri })
       return result.sessionId
     },
     sendClientRequest: async (_uri: string, method: string, params: any): Promise<any> => {
-      return await this.client.client.sendRequest(method, params)
+      return await this.client.sendRequest(method, params)
     },
     subscribeServerNotifications: async (method) => {
 
@@ -103,12 +90,14 @@ export class InfoProvider implements Disposable {
     }
   }
 
-  constructor (client: LeanClient, editor: monaco.editor.IStandaloneCodeEditor) {
+  constructor (editor: monaco.editor.IStandaloneCodeEditor) {
 
-    this.client = client
+    this.client = new MonacoLanguageClient({ id: 'lean4', name: 'Lean 4', clientOptions, connectionProvider })
+    this.client.start()
+
+    setTimeout(() => this.initInfoView(), 1000)
+
     this.editor = editor
-
-    restartedEmitter.event(() => this.initInfoView())
   }
 
   async setInfoviewApi (infoviewApi: InfoviewApi) {
@@ -120,6 +109,6 @@ export class InfoProvider implements Disposable {
     const uri = this.editor.getModel().uri.toString()
     const range = { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } }
     await this.infoviewApi.initialize({ uri, range })
-    await this.infoviewApi.serverRestarted(this.client.client.initializeResult)
+    await this.infoviewApi.serverRestarted(this.client.initializeResult)
   }
 }
