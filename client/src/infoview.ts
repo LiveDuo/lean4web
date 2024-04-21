@@ -43,7 +43,6 @@ const connectionProvider : IConnectionProvider = {
 export class InfoProvider implements Disposable {
 
   private infoviewApi: InfoviewApi
-  private editor: monaco.editor.IStandaloneCodeEditor
 
   public readonly client: MonacoLanguageClient | undefined
   public readonly editorApi: EditorApi = {
@@ -90,23 +89,19 @@ export class InfoProvider implements Disposable {
     }
   }
 
-  constructor (editor: monaco.editor.IStandaloneCodeEditor) {
+  constructor () {
 
     this.client = new MonacoLanguageClient({ id: 'lean4', name: 'Lean 4', clientOptions, connectionProvider })
     this.client.start()
-
-    setTimeout(() => this.initInfoView(), 1000)
-
-    this.editor = editor
   }
 
   async setInfoviewApi (infoviewApi: InfoviewApi) {
     this.infoviewApi = infoviewApi
   }
 
-  async initInfoView () {
+  async initInfoView (editor: monaco.editor.IStandaloneCodeEditor) {
     
-    const uri = this.editor.getModel().uri.toString()
+    const uri = editor.getModel().uri.toString()
     const range = { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } }
     await this.infoviewApi.initialize({ uri, range })
     await this.infoviewApi.serverRestarted(this.client.initializeResult)

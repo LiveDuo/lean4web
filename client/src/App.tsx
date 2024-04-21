@@ -23,7 +23,7 @@ const Editor: React.FC = () => {
     const model = monaco.editor.createModel(code, 'lean4')
     const editor = monaco.editor.create(document.body, { model, })
 
-    const infoProvider = new InfoProvider(editor)
+    const infoProvider = new InfoProvider()
     const imports = {
       '@leanprover/infoview': `${window.location.origin}/index.production.min.js`,
       'react': `${window.location.origin}/react.production.min.js`,
@@ -35,12 +35,13 @@ const Editor: React.FC = () => {
       setInfoviewApi(api)
       setInfoProvider(infoProvider)
     })
+    setTimeout(() => infoProvider.initInfoView(editor), 1000)
   }, [])
 
   useEffect(() => {
     if (infoProvider !== null && infoviewApi !== null) {
       infoProvider.setInfoviewApi(infoviewApi)
-      infoProvider.initInfoView()
+      
     }
   }, [infoviewApi, infoProvider])
 
