@@ -13,8 +13,6 @@ const diagnosticsEmitter = new EventEmitter()
 
 const project = 'MathlibLatest'
 
-const socketUrl = 'ws://' + window.location.host + '/websocket' + '/' + project
-
 const clientOptions: LanguageClientOptions = {
   documentSelector: ['lean4'],
   middleware: {
@@ -29,7 +27,7 @@ const clientOptions: LanguageClientOptions = {
 const connectionProvider : IConnectionProvider = {
   get: async () => {
     return await new Promise((resolve) => {
-      const websocket = new WebSocket(socketUrl)
+      const websocket = new WebSocket(`ws://${window.location.host}/websocket/${project}`)
       websocket.addEventListener('open', () => {
         const socket = toSocket(websocket)
         const reader = new WebSocketMessageReader(socket)
@@ -45,7 +43,7 @@ export class InfoProvider implements Disposable {
   private infoviewApi: InfoviewApi
 
   public readonly client: MonacoLanguageClient | undefined
-  public readonly editorApi: EditorApi = {
+  public readonly editorApi = {
     createRpcSession: async (uri) => {
       const result: RpcConnected = await this.client.sendRequest('$/lean/rpc/connect', { uri })
       return result.sessionId
@@ -59,7 +57,6 @@ export class InfoProvider implements Disposable {
         diagnosticsEmitter.event((params) => this.infoviewApi.gotServerNotification(method, params))
       }
     },
-
     subscribeClientNotifications: async (_method) => {
       throw new Error('Function not implemented.')
     },
