@@ -1,0 +1,10 @@
+{
+  "name": "node",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "dependencies": {
+    "websocket": "^1.0.34"
+  }
+}

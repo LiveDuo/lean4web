@@ -1,4 +1,4 @@
 {
     "name": "react-lean-example",
-    "workspaces": ["client", "server"]
+    "workspaces": ["client", "server", "node"]
 }
