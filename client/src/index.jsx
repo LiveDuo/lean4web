@@ -95,7 +95,7 @@ const editorApi = {
   }
 }
 
-// https://github.com/leanprover/vscode-lean4/blob/master/lean4-infoview/src/loader.ts#L22
+// https://github.com/leanprover/vscode-lean4/blob/master/lean4-infoview/src/infoview/main.tsx#L119
 
 ;(async () => {
 
