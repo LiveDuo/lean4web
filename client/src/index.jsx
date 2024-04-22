@@ -1,7 +1,7 @@
 
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 
-import { loadRenderInfoview } from '@leanprover/infoview/loader'
+import { renderInfoview } from '@leanprover/infoview'
 
 import { EventEmitter } from 'vscode'
 import { createConverter } from 'vscode-languageclient/lib/common/codeConverter'
@@ -67,45 +67,40 @@ const editorApi = {
   },
 
   subscribeClientNotifications: async (_method) => {
-    throw new Error('Function not implemented.')
+    // throw new Error('Function not implemented.')
   },
   insertText: async (_text, _kind, _tdpp) => {
-    throw new Error('Function not implemented.')
+    // throw new Error('Function not implemented.')
   },
   unsubscribeServerNotifications: function (_method) {
-    throw new Error('Function not implemented.')
+    // throw new Error('Function not implemented.')
   },
   unsubscribeClientNotifications: function (_method) {
-    throw new Error('Function not implemented.')
+    // throw new Error('Function not implemented.')
   },
   copyToClipboard: function (_text) {
-    throw new Error('Function not implemented.')
+    // throw new Error('Function not implemented.')
   },
   applyEdit: function (_te) {
-    throw new Error('Function not implemented.')
+    // throw new Error('Function not implemented.')
   },
   showDocument: function (_show) {
-    throw new Error('Function not implemented.')
+    // throw new Error('Function not implemented.')
   },
   closeRpcSession: function (_sessionId) {
-    throw new Error('Function not implemented.')
+    // throw new Error('Function not implemented.')
   },
   sendClientNotification: function (_uri, _method, _params) {
-    throw new Error('Function not implemented.')
+    // throw new Error('Function not implemented.')
   }
 }
 
-const imports = {
-  '@leanprover/infoview': `${window.location.origin}/index.production.min.js`,
-  'react': `${window.location.origin}/react.production.min.js`,
-  'react/jsx-runtime': `${window.location.origin}/react-jsx-runtime.production.min.js`,
-  'react-dom': `${window.location.origin}/react-dom.production.min.js`,
-  'react-popper': `${window.location.origin}/react-popper.production.min.js`
-}
-
 // https://github.com/leanprover/vscode-lean4/blob/master/lean4-infoview/src/loader.ts#L22
-loadRenderInfoview(imports, [editorApi, document.body], async (api) => {
-  
+
+;(async () => {
+
+  const api = renderInfoview(editorApi, document.body.querySelector('#root'))
+
   await client.start()
 
   const uri = editor.getModel().uri.toString()
@@ -115,4 +110,4 @@ loadRenderInfoview(imports, [editorApi, document.body], async (api) => {
 
   infoviewApi = api
 
-})
+})()
