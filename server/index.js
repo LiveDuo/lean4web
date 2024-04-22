@@ -1,12 +1,10 @@
 
 const express = require('express')
-const path = require('path')
 const nocache = require('nocache')
-const WebSocket = require('ws');
-const { spawn } = require('child_process');
+const WebSocket = require('ws')
+const { spawn } = require('child_process')
 
 const app = express()
-app.use(express.static(path.join(__dirname, '../client/dist/')))
 app.use(nocache())
 
 const PORT = process.env.PORT ?? 8080
@@ -101,8 +99,8 @@ class ClientConnection {
 
     console.log(`The path is ${path}`)
 
-    const cmd = 'lake';
-    const cmdArgs = ['serve', '--'];
+    const cmd = 'lake'
+    const cmdArgs = ['serve', '--']
     const cwd = path
 
     this.lean = spawn(cmd, cmdArgs, { cwd })
@@ -115,24 +113,23 @@ class WebSocketServer {
 
   constructor(server) {
     this.wss = new WebSocket.Server({ server })
-    this.socketCounter = 0;
+    this.socketCounter = 0
 
     this.wss.on('connection', (ws, req) => {
       const reRes = urlRegEx.exec(req.url)
-      if (!reRes) { console.error(`Connection refused because of invalid URL: ${req.url}`); return; }
+      if (!reRes) { console.error(`Connection refused because of invalid URL: ${req.url}`); return }
       const project = reRes[1]
 
       console.log(`Open with project: ${project}`)
 
-      this.socketCounter += 1;
+      this.socketCounter += 1
 
       new ClientConnection(ws, project)
       ws.on('close', () => {
-        this.socketCounter -= 1;
+        this.socketCounter -= 1
       })
     })
   }
 }
 
 new WebSocketServer(server)
-
